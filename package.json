@@ -1,0 +1,20 @@
+{
+  "name": "svelte-grab-workspace",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "bun run --filter svelte-grab build && bun run --filter playground-sveltekit build",
+    "check": "bun run --filter playground-sveltekit check && vitest run",
+    "dev": "bun run --filter playground-sveltekit dev",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
+  }
+}
