@@ -1,11 +1,28 @@
 {
-  "name": "svelte-grab",
-  "version": "0.0.1",
+  "name": "@uanandaraja/sveltegrab",
+  "version": "0.0.2",
   "private": false,
+  "description": "Dev-only element grabber for Svelte and SvelteKit",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uanandaraja/svelte-grab.git"
+  },
+  "homepage": "https://github.com/uanandaraja/svelte-grab",
+  "bugs": {
+    "url": "https://github.com/uanandaraja/svelte-grab/issues"
+  },
+  "keywords": [
+    "svelte",
+    "sveltekit",
+    "vite",
+    "devtools",
+    "inspect"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

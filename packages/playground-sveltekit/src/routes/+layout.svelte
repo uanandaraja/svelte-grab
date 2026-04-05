@@ -5,7 +5,7 @@
 	let { children } = $props();
 
 	if (browser && dev) {
-		void import("svelte-grab/auto");
+		void import("@uanandaraja/sveltegrab/auto");
 	}
 </script>
 

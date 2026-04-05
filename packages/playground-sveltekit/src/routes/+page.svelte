@@ -20,14 +20,14 @@
 </script>
 
 <svelte:head>
-	<title>svelte-grab playground</title>
+	<title>sveltegrab playground</title>
 </svelte:head>
 
 <main class="page-shell">
 	<section class="hero-grid">
 		<div class="intro-panel">
 			<p class="eyebrow">Dev-only element grabber</p>
-			<h1>svelte-grab playground</h1>
+			<h1>sveltegrab playground</h1>
 			<p class="lead">
 				Press <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>G</kbd>, hover something real, then click to copy
 				or press <kbd>O</kbd> to jump to the source file.

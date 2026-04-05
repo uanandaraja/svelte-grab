@@ -19,7 +19,7 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
 		alias: {
-			'svelte-grab/auto': '../svelte-grab/src/auto.ts'
+			'@uanandaraja/sveltegrab/auto': '../svelte-grab/src/auto.ts'
 		}
 	}
 };

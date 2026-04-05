@@ -6,9 +6,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun run --filter svelte-grab build && bun run --filter playground-sveltekit build",
+    "build": "bun run --filter @uanandaraja/sveltegrab build && bun run --filter playground-sveltekit build",
     "check": "bun run --filter playground-sveltekit check && vitest run",
     "dev": "bun run --filter playground-sveltekit dev",
+    "release:check": "bun run scripts/release.ts check",
+    "release:major": "bun run scripts/release.ts major",
+    "release:minor": "bun run scripts/release.ts minor",
+    "release:patch": "bun run scripts/release.ts patch",
+    "release:version": "bun run scripts/release.ts version",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

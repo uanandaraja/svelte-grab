@@ -51,7 +51,7 @@ export const init = (options: InitOptions = {}): SvelteGrabApi => {
   }
 
   if (hasInited) {
-    throw new Error("svelte-grab has already been initialized");
+    throw new Error("sveltegrab has already been initialized");
   }
 
   hasInited = true;
@@ -197,6 +197,10 @@ export const init = (options: InitOptions = {}): SvelteGrabApi => {
 
   const onKeyDown = (event: KeyboardEvent): void => {
     if (activationMatches(event, options.activationKey ?? DEFAULT_ACTIVATION_KEY)) {
+      if (!active) {
+        overlay.showToolbar();
+      }
+
       setActive(!active);
       event.preventDefault();
       return;

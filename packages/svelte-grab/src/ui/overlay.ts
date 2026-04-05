@@ -27,6 +27,7 @@ type CreateOverlayOptions = {
 
 const OVERLAY_ROOT_ID = "svelte-grab-overlay";
 const OVERLAY_IGNORE_ATTR = "data-svelte-grab-ignore";
+const TOOLBAR_HIDDEN_STORAGE_KEY = "svelte-grab-toolbar-hidden";
 
 const styles = `
 #${OVERLAY_ROOT_ID} {
@@ -215,8 +216,10 @@ const styles = `
   bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px 8px 14px;
+  justify-content: center;
+  width: 48px;
+  height: 28px;
+  padding: 0;
   border-radius: 999px;
   color: #0f172a;
   background: rgba(255, 255, 255, 0.96);
@@ -228,45 +231,131 @@ const styles = `
   pointer-events: auto;
 }
 
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar::before,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 96px;
+  height: 14px;
+  transform: translateX(-50%);
+}
+
 #${OVERLAY_ROOT_ID} .svelte-grab-toolbar[data-active="true"] {
   border-color: rgba(15, 118, 110, 0.32);
 }
 
-#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-brand {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar[hidden] {
+  display: none;
 }
 
-#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-state {
-  padding: 0.2rem 0.45rem;
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-popup {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 2px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(100, 116, 139, 0.38);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.24);
+  transform: translateX(-50%) translateY(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-popup-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-popup-copy {
+  font-size: 10px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar:hover .svelte-grab-toolbar-popup,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar:focus-within .svelte-grab-toolbar-popup,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost:hover .svelte-grab-toolbar-popup,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost:focus-within .svelte-grab-toolbar-popup {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-shortcut kbd {
+  min-width: 18px;
+  padding: 0.12rem 0.32rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 10px;
+  text-align: center;
+  color: #f8fafc;
+  background: rgba(51, 65, 85, 0.92);
+  border: 1px solid rgba(100, 116, 139, 0.45);
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-hide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid rgba(100, 116, 139, 0.45);
   border-radius: 999px;
+  color: #f8fafc;
+  background: rgba(51, 65, 85, 0.92);
+  font: inherit;
   font-size: 11px;
-  font-weight: 700;
-  color: #475569;
-  background: rgba(226, 232, 240, 0.75);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
 }
 
-#${OVERLAY_ROOT_ID} .svelte-grab-toolbar[data-active="true"] .svelte-grab-toolbar-state {
-  color: #065f46;
-  background: rgba(167, 243, 208, 0.85);
-}
-
-#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-hint {
-  font-size: 11px;
-  color: #64748b;
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-hide:hover {
+  background: rgba(71, 85, 105, 0.96);
+  border-color: rgba(148, 163, 184, 0.6);
 }
 
 #${OVERLAY_ROOT_ID} .svelte-grab-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 22px;
+  width: 34px;
+  height: 20px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toggle:focus-visible,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-hide:focus-visible,
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost:focus-visible {
+  outline: 2px solid rgba(45, 212, 191, 0.6);
+  outline-offset: 2px;
 }
 
 #${OVERLAY_ROOT_ID} .svelte-grab-toggle-track {
@@ -286,8 +375,8 @@ const styles = `
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 999px;
   background: #ffffff;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
@@ -295,7 +384,7 @@ const styles = `
 }
 
 #${OVERLAY_ROOT_ID} .svelte-grab-toggle[aria-pressed="true"] .svelte-grab-toggle-thumb {
-  transform: translateX(16px);
+  transform: translateX(14px);
 }
 
 #${OVERLAY_ROOT_ID} .svelte-grab-notice[data-tone="success"] {
@@ -308,15 +397,46 @@ const styles = `
   border-color: rgba(248, 113, 113, 0.5);
 }
 
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.14),
+    0 0 0 1px rgba(148, 163, 184, 0.35) inset;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost::before {
+  border-radius: 999px;
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+}
+
+#${OVERLAY_ROOT_ID} .svelte-grab-toolbar-ghost[hidden] {
+  display: none;
+}
+
 @media (max-width: 640px) {
   #${OVERLAY_ROOT_ID} .svelte-grab-toolbar {
-    gap: 8px;
-    padding-inline: 12px;
-    max-width: calc(100vw - 16px);
-  }
-
-  #${OVERLAY_ROOT_ID} .svelte-grab-toolbar-hint {
-    display: none;
+    bottom: 14px;
   }
 }
 `;
@@ -328,6 +448,8 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
   const root = document.createElement("div");
   root.id = OVERLAY_ROOT_ID;
   root.setAttribute(OVERLAY_IGNORE_ATTR, "true");
+  const storedToolbarHidden = window.localStorage.getItem(TOOLBAR_HIDDEN_STORAGE_KEY);
+  let toolbarHidden = storedToolbarHidden === "true";
   let flashState: OverlayFlashState | null = null;
   let flashTimeout: number | undefined;
   let lastRect: DOMRect | null = null;
@@ -355,16 +477,26 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
   toolbar.dataset.svelteGrabToolbar = "true";
   toolbar.setAttribute(OVERLAY_IGNORE_ATTR, "true");
 
-  const brand = document.createElement("span");
-  brand.className = "svelte-grab-toolbar-brand";
-  brand.textContent = "svelte-grab";
+  const toolbarPopup = document.createElement("div");
+  toolbarPopup.className = "svelte-grab-toolbar-popup";
+  toolbarPopup.setAttribute(OVERLAY_IGNORE_ATTR, "true");
 
-  const stateBadge = document.createElement("span");
-  stateBadge.className = "svelte-grab-toolbar-state";
+  const shortcutRow = document.createElement("div");
+  shortcutRow.className = "svelte-grab-toolbar-popup-row";
 
-  const hint = document.createElement("span");
-  hint.className = "svelte-grab-toolbar-hint";
-  hint.textContent = "Alt+Shift+G";
+  const shortcutLabel = document.createElement("div");
+  shortcutLabel.className = "svelte-grab-toolbar-popup-copy";
+  shortcutLabel.textContent = "Activate with:";
+
+  const shortcut = document.createElement("div");
+  shortcut.className = "svelte-grab-toolbar-shortcut";
+  shortcut.innerHTML = "<kbd>Alt</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>G</kbd>";
+
+  const hideButton = document.createElement("button");
+  hideButton.type = "button";
+  hideButton.className = "svelte-grab-toolbar-hide";
+  hideButton.textContent = "Hide";
+  hideButton.setAttribute(OVERLAY_IGNORE_ATTR, "true");
 
   const toggle = document.createElement("button");
   toggle.type = "button";
@@ -378,20 +510,71 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
   const toggleThumb = document.createElement("span");
   toggleThumb.className = "svelte-grab-toggle-thumb";
 
+  const toolbarGhost = document.createElement("button");
+  toolbarGhost.type = "button";
+  toolbarGhost.className = "svelte-grab-toolbar-ghost";
+  toolbarGhost.setAttribute("aria-label", "Show grab toggle");
+  toolbarGhost.setAttribute(OVERLAY_IGNORE_ATTR, "true");
+  toolbarGhost.dataset.svelteGrabToolbarGhost = "true";
+
+  const ghostPopup = document.createElement("div");
+  ghostPopup.className = "svelte-grab-toolbar-popup";
+  ghostPopup.setAttribute(OVERLAY_IGNORE_ATTR, "true");
+
+  const ghostShow = document.createElement("button");
+  ghostShow.type = "button";
+  ghostShow.className = "svelte-grab-toolbar-hide";
+  ghostShow.textContent = "Show";
+  ghostShow.setAttribute(OVERLAY_IGNORE_ATTR, "true");
+
+  ghostPopup.append(ghostShow);
+  toolbarGhost.append(ghostPopup);
+
   toggleTrack.append(toggleThumb);
   toggle.append(toggleTrack);
-  toolbar.append(brand, stateBadge, hint, toggle);
+  shortcutRow.append(shortcutLabel, shortcut);
+  toolbarPopup.append(shortcutRow, hideButton);
+  toolbar.append(toggle, toolbarPopup);
   toggle.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
     options.onToggle?.();
   });
+  hideButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toolbarHidden = true;
+    window.localStorage.setItem(TOOLBAR_HIDDEN_STORAGE_KEY, "true");
+    renderToolbar();
+  });
+  toolbarGhost.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toolbarHidden = false;
+    window.localStorage.setItem(TOOLBAR_HIDDEN_STORAGE_KEY, "false");
+    renderToolbar();
+  });
+  ghostShow.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toolbarHidden = false;
+    window.localStorage.setItem(TOOLBAR_HIDDEN_STORAGE_KEY, "false");
+    renderToolbar();
+  });
 
-  root.append(style, frameGlow, frame, box, label, notice, toolbar);
+  root.append(style, frameGlow, frame, box, label, notice, toolbar, toolbarGhost);
   document.body.append(root);
 
+  const renderToolbar = (): void => {
+    toolbar.hidden = toolbarHidden;
+    toolbarGhost.hidden = !toolbarHidden;
+  };
+
   const renderFlash = (): void => {
-    const rect = flashState?.rect ?? lastRect ?? toolbar.getBoundingClientRect();
+    const fallbackRect = toolbarHidden
+      ? toolbarGhost.getBoundingClientRect()
+      : toolbar.getBoundingClientRect();
+    const rect = flashState?.rect ?? lastRect ?? fallbackRect;
 
     if (!flashState || !rect) {
       notice.style.display = "none";
@@ -448,6 +631,11 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
     markIgnored(element: Element) {
       element.setAttribute(OVERLAY_IGNORE_ATTR, "true");
     },
+    showToolbar() {
+      toolbarHidden = false;
+      window.localStorage.setItem(TOOLBAR_HIDDEN_STORAGE_KEY, "false");
+      renderToolbar();
+    },
     update(overlayState: OverlayState) {
       lastRect = overlayState.rect;
       frameGlow.dataset.active = overlayState.active ? "true" : "false";
@@ -456,10 +644,9 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
         overlayState.visible && overlayState.rect ? "block" : "none";
       label.style.display = overlayState.visible ? "block" : "none";
       toolbar.dataset.active = overlayState.active ? "true" : "false";
-      stateBadge.textContent = overlayState.active ? "On" : "Off";
       toggle.setAttribute(
         "aria-label",
-        overlayState.active ? "Disable svelte-grab" : "Enable svelte-grab",
+        overlayState.active ? "Disable sveltegrab" : "Enable sveltegrab",
       );
       toggle.setAttribute(
         "aria-pressed",
@@ -484,6 +671,7 @@ export const createOverlay = (options: CreateOverlayOptions = {}) => {
         8,
         window.innerHeight - 80,
       )}px`;
+      renderToolbar();
       renderFlash();
     },
   };

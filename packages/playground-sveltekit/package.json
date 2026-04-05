@@ -12,7 +12,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"dependencies": {
-		"svelte-grab": "file:../svelte-grab"
+		"@uanandaraja/sveltegrab": "file:../svelte-grab"
 	},
 	"devDependencies": {
 		"@types/node": "^24.10.1",

@@ -10,7 +10,7 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
-				find: "svelte-grab/auto",
+				find: "@uanandaraja/sveltegrab/auto",
 				replacement: path.resolve(
 					workspaceRoot,
 					"packages/svelte-grab/src/auto.ts",
